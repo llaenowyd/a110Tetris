@@ -1,21 +1,21 @@
 import * as R from 'ramda'
 
-import { getNextPiece, rand } from '../Random'
+import { getNextTet, rand } from '../Random'
 
 import tickThunk from './tickThunk'
 
 const makeRandomFillThunk = () => (dispatch, getState) =>
   (({bag, size}) =>
       (cells => {
-        function gnp(result, bag) {
+        function gnt(result, bag) {
           if (result.length === cells) return Promise.resolve(result)
 
-          return getNextPiece(bag).then(
-            ([np, nb]) => gnp(R.append(np, result), nb)
+          return getNextTet(bag).then(
+            ([np, nb]) => gnt(R.append(np, result), nb)
           )
         }
 
-        return gnp([], bag).then(
+        return gnt([], bag).then(
           R.splitEvery(size[0])
         ).then(
           bucket => {
@@ -73,12 +73,25 @@ const makeStopTickThunk = () =>
   }
 
 export default {
-  doTestPattern: () => (dispatch, getState) =>
+  newGame: () => (dispatch, getState) =>
+    makeStopTickThunk()(dispatch, getState).then(
+      () => {
+        dispatch({type: 'reset', payload: {}})
+        dispatch({type: 'setupNewGame', payload: {}})
+      }
+    ).then(
+      () => makeStartTickThunk('game')(dispatch, getState)
+    ),
+  reset: () => (dispatch, getState) =>
+    makeStopTickThunk()(dispatch, getState).then(
+      () => dispatch({type: 'reset', payload: {}})
+    ),
+  startTick: makeStartTickThunk,
+  stopTick: makeStopTickThunk,
+  testPattern: () => (dispatch, getState) =>
     makeStopTickThunk()(dispatch, getState).then(
       () => makeRandomFillThunk()(dispatch, getState)
     ).then(
       () => makeStartTickThunk('testPattern')(dispatch, getState)
-    ),
-  startTick: makeStartTickThunk,
-  stopTick: makeStopTickThunk
+    )
 }

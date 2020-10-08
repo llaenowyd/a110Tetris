@@ -1,5 +1,7 @@
 import * as R from 'ramda'
 
+const tetset = ['I','J','L','O','S','T','Z']
+
 const initialOffsets = {
   I: [[0,2],[1,2],[2,2],[3,2]],
   J: [[0,3],[1,3],[2,3],[2,2]],
@@ -70,4 +72,4 @@ const palette = {
   }
 }
 
-export { create, palette }
+export { create, palette, tetset }

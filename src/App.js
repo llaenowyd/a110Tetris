@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   game: {
     height: '80%',
     margin: 10,
-    backgroundColor: 'lightblue'
+    backgroundColor: 'aliceblue'
   }
 })
 

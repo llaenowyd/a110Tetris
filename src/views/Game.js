@@ -13,39 +13,41 @@ import {
 import * as R from 'ramda'
 
 import thunks from '../state/thunks'
-import GameBoard from './GameBoard'
 import Matrix from './Matrix'
-import NextPiece from './NextPiece'
 
 const styles = StyleSheet.create({
   game: {
+    backgroundColor: 'palegoldenrod'
+  },
+  button: {
+    margin: 2,
+    flexGrow: 1,
+    flexShrink: 1
+  },
+  buttonRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    marginLeft: 32,
+    marginRight: 32
   },
   matrix: {
     height: '100%',
     padding: 3
-  },
-  nextPiece: {
-    margin: 10
   }
 })
-  // <GameBoard />
-  // <NextPiece style={styles.nextPiece}/>
-  // <Matrix rows={20} cols={10} style={styles.matrix} />
 
 export default props => {
   const dispatch = useDispatch()
 
-  const handleNextClick = () => dispatch({
-    type: 'nextPiece',
-    payload: { }
-  })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => () => dispatch(thunks.stopTick()), [])
 
-  const handleTestPatternClick = () => dispatch(thunks.doTestPattern())
+  const handleTestPatternClick = () => dispatch(thunks.testPattern())
 
-  const handleResetClick = () => dispatch({
-    type: 'reset',
-    payload: { }
-  })
+  const handleNewGameClick = () => {}
+
+  const handleResetClick = () => dispatch(thunks.reset())
 
   const handleToggleStyleClick = () => dispatch({
     type: 'toggleMatrixStyle',
@@ -54,21 +56,37 @@ export default props => {
 
   return (
     <>
-      <View style={R.mergeLeft(R.defaultTo({}, props.style), styles.game)}>
+      <View style={R.mergeLeft(styles.game, R.defaultTo({}, props.style))}>
         <Matrix style={styles.matrix} />
       </View>
-      <Button
-        title="test pattern"
-        onPress={handleTestPatternClick}
-      />
-      <Button
-        title="toggle style"
-        onPress={handleToggleStyleClick}
-      />
-      <Button
-        title="reset"
-        onPress={handleResetClick}
-      />
+      <View style={styles.buttonRow}>
+        <View style={styles.button}>
+          <Button
+            title="test pattern"
+            onPress={handleTestPatternClick}
+          />
+        </View>
+        <View style={styles.button}>
+          <Button
+            title="new game"
+            onPress={handleNewGameClick}
+          />
+        </View>
+      </View>
+      <View style={styles.buttonRow}>
+        <View style={styles.button}>
+          <Button
+            title="toggle style"
+            onPress={handleToggleStyleClick}
+          />
+        </View>
+        <View style={styles.button}>
+          <Button
+            title="reset"
+            onPress={handleResetClick}
+          />
+        </View>
+      </View>
     </>
   )
 }

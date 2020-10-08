@@ -4,8 +4,7 @@ import { Alert } from 'react-native'
 
 import * as R from 'ramda'
 
-import { getNextPiece } from '../Random'
-import { getRandomFill } from '../bucket'
+import { getNextTet } from '../Random'
 
 import { getInitialState } from './initialState'
 
@@ -21,10 +20,10 @@ export const reducer =
             )(action.payload)
         ],
         [
-          matchAction('nextPiece'),
+          matchAction('nextTet'),
           R.over(
-            R.lensPath(['game', 'nextPiece']),
-            getNextPiece
+            R.lensPath(['game', 'nextTet']),
+            getNextTet
           )
         ],
         [
@@ -43,11 +42,18 @@ export const reducer =
         [
           matchAction('toggleMatrixStyle'),
           R.over(
-            R.lensPath(['style', 'matrix']),
-            R.ifElse(
-              R.equals(1),
-              R.always(0),
-              R.add(1)
+            R.lensPath(['style']),
+            R.chain(
+              nextMatrixStyle => style => R.assoc('matrix', nextMatrixStyle, style),
+              style =>
+                R.compose(
+                  R.ifElse(
+                    R.equals(1),
+                    R.always(0),
+                    R.add(1)
+                  ),
+                  R.prop('matrix')
+                )(style)
             )
           )
         ],
@@ -83,7 +89,10 @@ export const reducer =
           matchAction('reset'),
           state =>
             (([rows, cols]) =>
-              getInitialState(rows, cols)
+              R.mergeLeft(
+                R.pick(['style'], state),
+                getInitialState(rows, cols)
+              )
             )(
               R.path(['game', 'size'], state)
             )
