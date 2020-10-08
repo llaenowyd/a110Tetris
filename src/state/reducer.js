@@ -44,16 +44,15 @@ export const reducer =
           R.over(
             R.lensPath(['style']),
             R.chain(
-              nextMatrixStyle => style => R.assoc('matrix', nextMatrixStyle, style),
-              style =>
-                R.compose(
-                  R.ifElse(
-                    R.equals(1),
-                    R.always(0),
-                    R.add(1)
-                  ),
-                  R.prop('matrix')
-                )(style)
+              nextMatrixStyle => R.assoc('matrix', nextMatrixStyle),
+              R.compose(
+                R.ifElse(
+                  R.equals(1),
+                  R.always(0),
+                  R.add(1)
+                ),
+                R.prop('matrix')
+              )
             )
           )
         ],
