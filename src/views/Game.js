@@ -75,6 +75,10 @@ export default props => {
   const handleLeftRotateClick = () => dispatch({type: 'inpLR'})
   const handleRightRotateClick = () => dispatch({type: 'inpRR'})
   const handleNextTetClick = () => dispatch({type: 'inpNextTet'})
+  const handleLeftClick = () => dispatch({type: 'inpL'})
+  const handleRightClick = () => dispatch({type: 'inpR'})
+  const handleUpClick = () => dispatch({type: 'inpU'})
+  const handleDownClick = () => dispatch({type: 'inpD'})
 
   return (
     <>
@@ -83,15 +87,31 @@ export default props => {
       </View>
       <View style={styles.buttonRow}>
         <Presser
-          text="rot L"
+          text="L"
           onPress={handleLeftRotateClick}
         />
         <Presser
-          text="rot R"
+          text="R"
           onPress={handleRightRotateClick}
         />
         <Presser
-          text="next tet"
+          text="<"
+          onPress={handleLeftClick}
+        />
+        <Presser
+          text=">"
+          onPress={handleRightClick}
+        />
+        <Presser
+          text="^"
+          onPress={handleUpClick}
+        />
+        <Presser
+          text="v"
+          onPress={handleDownClick}
+        />
+        <Presser
+          text="next"
           onPress={handleNextTetClick}
         />
       </View>
@@ -104,8 +124,6 @@ export default props => {
           text="new game"
           onPress={handleNewGameClick}
         />
-      </View>
-      <View style={styles.buttonRow}>
         <Presser
           text="toggle style"
           onPress={handleToggleStyleClick}

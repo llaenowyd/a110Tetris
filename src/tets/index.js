@@ -12,22 +12,17 @@ const initialOffsets = {
   Z: [[0,2],[1,2],[1,1],[2,1]]
 }
 
-const getInitialOffsets = R.flip(R.prop)(initialOffsets)
+const getInitialPos =
+  (cols, rows) =>
+    tet =>
+      (tetSz =>
+        [
+          Math.floor(cols / 2) - tetSz - 1,
+          rows - tetSz
+        ]
+      )(tet === 'I' ? 2 : 1)
 
-// const makeMakeTet =
-//   tetc =>
-//     (pos=[0,0]) =>
-//       (offsets =>
-//         R.juxt(
-//           R.map(
-//             xl =>
-//               R.apply(R.compose)([
-//                 R.over(R.lensIndex(0), R.add(xl[0])),
-//                 R.over(R.lensIndex(1), R.add(xl[1]))
-//               ])
-//           )(offsets)
-//         )(pos)
-//       )(getInitialOffsets(tetc))
+const getInitialOffsets = R.flip(R.prop)(initialOffsets)
 
 const makeTet =
   tetc =>
@@ -83,4 +78,4 @@ const palette = {
   }
 }
 
-export { makeTet, palette, tetset }
+export { getInitialPos, makeTet, palette, tetset }

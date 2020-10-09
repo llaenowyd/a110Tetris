@@ -30,6 +30,10 @@ const handleInputThunk =
       const doNextTet = R.complement(R.isNil)(R.find(R.equals('N'), input))
       const doLeftRot = R.complement(R.isNil)(R.find(R.equals('L'), input))
       const doRiteRot = R.complement(R.isNil)(R.find(R.equals('R'), input))
+      const doLeft = R.complement(R.isNil)(R.find(R.equals('<'), input))
+      const doRite = R.complement(R.isNil)(R.find(R.equals('>'), input))
+      const doUp = R.complement(R.isNil)(R.find(R.equals('^'), input))
+      const doDown = R.complement(R.isNil)(R.find(R.equals('v'), input))
 
       return (
         doNextTet ?
@@ -39,6 +43,10 @@ const handleInputThunk =
           () => {
             if (doLeftRot) dispatch({type: 'leftRot'})
             if (doRiteRot) dispatch({type: 'riteRot'})
+            if (doLeft) dispatch({type: 'left'})
+            if (doRite) dispatch({type: 'rite'})
+            if (doUp) dispatch({type: 'up'})
+            if (doDown) dispatch({type: 'down'})
             dispatch({type: 'clearInput'})
           }
         )

@@ -1,26 +1,46 @@
 import * as R from 'ramda'
 
 export const drawActiTet = state => {
-  const {game:{bucket, actiTet: {kind, points}, size:[rows, cols]}} = state
+  const {game:{bucket, actiTet: {kind, points, pos}}} = state
 
-  const pos = 0
-
-  for (let i = 0; i < rows*cols; i++)
-    bucket[Math.floor(i/rows)][i%rows] = 'T'
-
-  for (let i = 0; i < 25; i++) {
-    bucket[pos + Math.floor(i/5)][pos + i%5] = 0
-  }
+  const [x, y] = pos
 
   R.forEach(
     ([i,j]) => {
-      bucket[pos + i][pos + j] = kind
+      bucket[x + i][y + j] = kind
     },
     points
   )
 
   return state
 }
+
+const setBucket =
+  bucket =>
+    (cols =>
+      (i, j, k) =>
+        { if (i>=0 && j>=0 && i < cols) bucket[i][j] = k }
+    )(bucket.length)
+
+const drawPoints = ({kind, points, pos}) =>
+  R.over(
+    R.lensPath(['game', 'bucket']),
+    bucket =>
+      (setBucket => {
+        R.forEach(
+          ([i,j]) =>
+            (
+              ([it, jt]) => { setBucket(it, jt, kind) }
+            )(
+              [pos[0]+i, pos[1]+j]
+            ),
+          points
+        )
+        return bucket
+      })(setBucket(bucket))
+  )
+
+const clearPoints = ({points, pos}) => drawPoints({kind: 0, points, pos})
 
 const quadrots =
   [
@@ -51,10 +71,8 @@ const rot1 =
       ]
     ])
 
-const rot = n => actiTet => {
+const rot = (n, actiTet) => {
   const {kind} = actiTet
-
-  const [x,y] = [0,0]
 
   const r = kind === 'I' ? 2 : 1
 
@@ -62,19 +80,59 @@ const rot = n => actiTet => {
     R.lensProp('points'),
     R.map(
       R.compose(
-        ([i, j]) => [i + x + r, j + y + r],
+        ([i, j]) => [i + r, j + r],
         R.apply(R.compose)(
           R.repeat(rot1(n > 0), Math.abs(n % 4))
         ),
-        ([i, j]) => [i - x - r, j - y - r]
+        ([i, j]) => [i - r, j - r]
       )
     ),
     actiTet
   )
 }
 
-const rotate = n => R.over(R.lensPath(['game', 'actiTet']), rot(n))
+const rotate = n => state => {
+  const {game:{actiTet}} = state
+  const nextActiTet = rot(n, actiTet)
+
+  return R.compose(
+    R.set(R.lensPath(['game', 'actiTet']), nextActiTet),
+    drawPoints(nextActiTet),
+    clearPoints(actiTet)
+  )(state)
+}
 
 export const leftRot = rotate(-1)
 
 export const riteRot = rotate(1)
+
+const isCollision = (state, maybeNextActiTet) => false
+
+const translate =
+  (axIndex, op) =>
+    state =>
+      (([actiTet, nextActiTet]) =>
+        R.compose(
+          drawPoints(nextActiTet),
+          R.set(R.lensPath(['game', 'actiTet']), nextActiTet),
+          clearPoints(actiTet)
+        )(state)
+      )((
+        actiTet => [
+          actiTet,
+          R.over(
+            R.lensPath(['pos', axIndex]),
+            op
+          )(actiTet)
+        ]
+      )(
+        R.path(['game', 'actiTet'])(state)
+      ))
+
+export const left = translate(0, R.add(-1))
+
+export const rite = translate(0, R.add(1))
+
+export const up = translate(1, R.add(1))
+
+export const down = translate(1, R.add(-1))

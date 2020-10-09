@@ -4,11 +4,12 @@ import { getEmptyBucket } from '../bucket'
 export const getInitialState = (rows=20, cols=10) =>
   ({
     game: {
-      size: [rows, cols],
+      size: [cols, rows],
       nextTet: null,
       actiTet: {
         kind: null,
-        points: []
+        points: [],
+        pos: [0,0]
       },
       rotation: 0,
       bag: [],

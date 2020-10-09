@@ -11,7 +11,7 @@ import tickGame from './tickGameThunk';
 const tickTestPattern = (dispatch, getState, checkpointIsIdle) => {
   const { game, tick } = getState()
   const { bucket, size } = game
-  const [rows, cols] = size
+  const [cols, rows] = size
   const n = 20
 
   const makeCheckpoint = curtail => res => checkpointIsIdle() ? curtail : res

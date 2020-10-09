@@ -16,7 +16,7 @@ const makeRandomFillThunk = () => (dispatch, getState) =>
         }
 
         return gnt([], bag).then(
-          R.splitEvery(size[0])
+          R.splitEvery(size[1])
         ).then(
           bucket => {
             dispatch({

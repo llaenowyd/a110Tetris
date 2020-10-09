@@ -140,7 +140,7 @@ const Block = ({i, j}) => {
 }
 
 const Matrix = props => {
-  const [ rows, cols ] = useSelector(R.path(['game', 'size']))
+  const [ cols, rows ] = useSelector(R.path(['game', 'size']))
 
   return (
     <View style={R.mergeLeft(R.defaultTo({}, props.style), styles.view)}>

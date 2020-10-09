@@ -2,16 +2,16 @@ import { Alert } from 'react-native'
 
 import * as R from 'ramda'
 
-import { makeTet } from '../tets'
+import { getInitialPos, makeTet } from '../tets'
 
 import { getInitialState } from './initialState'
-import { drawActiTet, leftRot, riteRot } from './matrixReducers'
+import { drawActiTet, leftRot, riteRot, left, rite, up, down } from './matrixReducers'
 import { tryCatcher } from './common'
 
 const resetReducer =
   state =>
     (
-      ([rows, cols]) =>
+      ([cols, rows]) =>
         R.mergeLeft(
           R.pick(['style'], state),
           getInitialState(rows, cols)
@@ -68,6 +68,24 @@ export const reducer =
                   R.path(['game', 'actiTet', 'kind'])
                 )
               ),
+              state =>
+                (getInitPos =>
+                  R.over(
+                    R.lensPath(['game', 'actiTet']),
+                    R.chain(
+                      R.set(R.lensProp('pos')),
+                      R.compose(
+                        getInitPos,
+                        R.prop('kind')
+                      )
+                    )
+                  )(state)
+                )(
+                  R.compose(
+                    ([cols, rows]) => getInitialPos(cols, rows),
+                    R.path(['game', 'size'])
+                  )(state)
+                ),
               R.chain(
                 R.set(R.lensPath(['game', 'actiTet', 'kind'])),
                 R.view(R.lensPath(['game', 'nextTet']))
@@ -92,18 +110,44 @@ export const reducer =
           inputReducer('N')
         ],
         [
+          matchAction('inpL'),
+          inputReducer('<')
+        ],
+        [
+          matchAction('inpR'),
+          inputReducer('>')
+        ],
+        [
+          matchAction('inpU'),
+          inputReducer('^')
+        ],
+        [
+          matchAction('inpD'),
+          inputReducer('v')
+        ],
+        [
           matchAction('leftRot'),
-          R.compose(
-            drawActiTet,
-            leftRot
-          )
+          leftRot
         ],
         [
           matchAction('riteRot'),
-          R.compose(
-            drawActiTet,
-            riteRot
-          )
+          riteRot
+        ],
+        [
+          matchAction('left'),
+          left
+        ],
+        [
+          matchAction('rite'),
+          rite
+        ],
+        [
+          matchAction('up'),
+          up
+        ],
+        [
+          matchAction('down'),
+          down
         ],
         [
           matchAction('clearInput'),
