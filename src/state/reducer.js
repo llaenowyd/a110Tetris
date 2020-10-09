@@ -1,12 +1,36 @@
-
-
 import { Alert } from 'react-native'
 
 import * as R from 'ramda'
 
-import { getNextTet } from '../Random'
+import { makeTet } from '../tets'
 
 import { getInitialState } from './initialState'
+import { drawActiTet, leftRot, riteRot } from './matrixReducers'
+import { tryCatcher } from './common'
+
+const resetReducer =
+  state =>
+    (
+      ([rows, cols]) =>
+        R.mergeLeft(
+          R.pick(['style'], state),
+          getInitialState(rows, cols)
+        )
+    )(
+      R.path(['game', 'size'], state)
+    )
+
+const inputReducer =
+  tryCatcher('inputReducer')(
+    key =>
+      R.chain(
+        R.set(R.lensProp('input')),
+        R.compose(
+          R.append(key),
+          R.prop('input')
+        )
+      )
+  )
 
 export const reducer =
   (
@@ -20,11 +44,70 @@ export const reducer =
             )(action.payload)
         ],
         [
-          matchAction('nextTet'),
-          R.over(
-            R.lensPath(['game', 'nextTet']),
-            getNextTet
+          matchAction('setNextTet'),
+          (state, {payload: [nextTet, bag]}) =>
+            R.compose(
+              R.set(
+                R.lensPath(['game', 'nextTet']),
+                nextTet
+              ),
+              R.set(
+                R.lensPath(['game', 'bag']),
+                bag
+              )
+            )(state)
+        ],
+        [
+          matchAction('useNextTet'),
+          tryCatcher('useNextTet')(
+            R.compose(
+              R.chain(
+                R.set(R.lensPath(['game', 'actiTet', 'points'])),
+                R.compose(
+                  makeTet,
+                  R.path(['game', 'actiTet', 'kind'])
+                )
+              ),
+              R.chain(
+                R.set(R.lensPath(['game', 'actiTet', 'kind'])),
+                R.view(R.lensPath(['game', 'nextTet']))
+              )
+            )
           )
+        ],
+        [
+          matchAction('drawActiTet'),
+          drawActiTet
+        ],
+        [
+          matchAction('inpLR'),
+          inputReducer('L')
+        ],
+        [
+          matchAction('inpRR'),
+          inputReducer('R')
+        ],
+        [
+          matchAction('inpNextTet'),
+          inputReducer('N')
+        ],
+        [
+          matchAction('leftRot'),
+          R.compose(
+            drawActiTet,
+            leftRot
+          )
+        ],
+        [
+          matchAction('riteRot'),
+          R.compose(
+            drawActiTet,
+            riteRot
+          )
+        ],
+        [
+          matchAction('clearInput'),
+          tryCatcher('clearInput')(R.set(R.lensProp('input'), []))
         ],
         [
           matchAction('setBucket'),
@@ -86,15 +169,7 @@ export const reducer =
         ],
         [
           matchAction('reset'),
-          state =>
-            (([rows, cols]) =>
-              R.mergeLeft(
-                R.pick(['style'], state),
-                getInitialState(rows, cols)
-              )
-            )(
-              R.path(['game', 'size'], state)
-            )
+          resetReducer
         ],
         [ R.T,
           (state, action) => {

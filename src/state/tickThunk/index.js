@@ -1,33 +1,18 @@
-import { Alert } from 'react-native'
-
 import * as R from 'ramda'
 
-import makeRange from '../fun/makeRange'
-import { rand, safeRange } from '../Random'
-import { tetset } from '../tets'
+import makeRange from '../../fun/makeRange'
+import { rand, safeRange } from '../../Random'
+import { tetset } from '../../tets'
 
-const catcher = tag => e => { throw new Error(`${tag} ${e.message}`) }
-const tryCatcher = tag => f => R.tryCatch(f, catcher(tag))
+import { alertOnce, tryCatcher } from '../common'
 
-const isntTickRunningMode = mode =>
-  R.compose(
-    R.not,
-    tick => R.allPass(
-      [
-        R.compose(R.not, R.prop('idle')),
-        R.propEq('mode', mode)
-      ],
-      tick
-    )
-  )
+import tickGame from './tickGameThunk';
 
 const tickTestPattern = (dispatch, getState, checkpointIsIdle) => {
   const { game, tick } = getState()
   const { bucket, size } = game
   const [rows, cols] = size
   const n = 20
-
-  if (isntTickRunningMode('testPattern')(tick)) return Promise.resolve()
 
   const makeCheckpoint = curtail => res => checkpointIsIdle() ? curtail : res
 
@@ -78,35 +63,34 @@ const tickTestPattern = (dispatch, getState, checkpointIsIdle) => {
   )()
 }
 
-// const unsafeSnake = (dispatch, getState, checkpointIsIdle, context) => {
-//   let { rows, cols, bucket, ps, it } = context
-//
-//   const gnt = () => {
-//     const result = R.head(ps)
-//     ps = R.append(result, R.tail(ps))
-//     return result
-//   }
-//
-//   const i = Math.floor(it / rows)
-//   const j = it % rows
-//
-//   it++
-//   if (it === rows*cols) it = 0
-//
-//   bucket[i][j] = gnt()
-//
-//   const unsafeStep = () => {
-//     if (i > 0) throw new Error('unsafe step')
-//   }
-//
-//   return Promise.resolve().then(
-//     unsafeStep
-//   ).then(
-//     () => Promise.resolve(dispatch({type: 'setBucket', payload: bucket}))
-//   ).then(
-//     () => Promise.resolve()
-//   )
-// }
+const makeNoop = mode => () => Promise.resolve(alertOnce(`unknown mode '${mode}'`))
+
+const isNotRunningMode =
+  mode =>
+    getState =>
+      R.compose(
+        R.not,
+        tick => R.allPass(
+          [
+            R.complement(R.isNil),
+            R.compose(R.not, R.prop('idle')),
+            R.propEq('mode', mode)
+          ],
+          tick
+        )
+      )(getState().tick)
+
+const safetyWrap =
+  (mode, ticker) =>
+    (dispatch, getState, checkpointIsIdle) =>
+      isNotRunningMode(mode)(getState)
+        ? Promise.resolve()
+        : ticker(dispatch, getState, checkpointIsIdle)
+
+const tickerOrNoop =
+    mode =>
+      ticker =>
+        ticker ? safetyWrap(mode, ticker) : makeNoop(mode)
 
 function tickThunk(dispatch, getState) {
   const { tick } = getState()
@@ -117,12 +101,11 @@ function tickThunk(dispatch, getState) {
   const t0 = Date.now()
   const externalSkew = t0 - prevT0 - interval
 
-  const makeNoop = mode => () => Promise.resolve(R.once(() => { Alert.alert(`unknown mode '${mode}'`) })())
-
   return (
-    ticker => R.defaultTo(makeNoop(mode), ticker)(dispatch, getState, checkpointIsIdle)
+    ticker => tickerOrNoop(mode)(ticker)(dispatch, getState, checkpointIsIdle)
   )(
     R.flip(R.prop)({
+      'game': tickGame,
       'testPattern': tickTestPattern
     })(mode)
   ).then(
@@ -159,7 +142,10 @@ function tickThunk(dispatch, getState) {
       return Promise.resolve()
     }
   ).catch(
-    e => Alert.alert('error', e.message)
+    e => {
+      console.error(e.stack)
+      alertOnce(e.message)
+    }
   )
 }
 

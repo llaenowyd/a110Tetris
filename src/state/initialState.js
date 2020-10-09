@@ -6,11 +6,15 @@ export const getInitialState = (rows=20, cols=10) =>
     game: {
       size: [rows, cols],
       nextTet: null,
-      activeTet: null,
+      actiTet: {
+        kind: null,
+        points: []
+      },
       rotation: 0,
       bag: [],
       bucket: getEmptyBucket(rows, cols)
     },
+    input: [],
     style: {
       matrix: 0
     },

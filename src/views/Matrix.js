@@ -157,7 +157,7 @@ const Matrix = props => {
                 }
               </View>
             ),
-            makeRange(rows)
+            R.reverse(makeRange(rows))
           )
         }
       </ImageBackground>

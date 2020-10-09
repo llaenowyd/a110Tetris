@@ -10,8 +10,6 @@ import { useSelector } from 'react-redux'
 
 import * as R from 'ramda'
 
-import * as Tets from '../tets'
-
 const styles = StyleSheet.create({
   nextTet: {
     position: 'relative',
@@ -41,8 +39,9 @@ const styles = StyleSheet.create({
 export default props => {
   const nextTetKind = useSelector(R.path(['game', 'nextTet']))
 
-  const nextTet = Tets.create(nextTetKind)([0,0])
-  const nextTetColor = nextTet.color
+  //const nextTet = makeTet(nextTetKind)()
+  const nextTet = 'I'
+  const nextTetColor = '#000000'
 
   const indexes = [0,1,2,3]
 

@@ -14,6 +14,7 @@ import * as R from 'ramda'
 
 import thunks from '../state/thunks'
 import Matrix from './Matrix'
+import { default as CustomButton } from './components/Button'
 
 const styles = StyleSheet.create({
   game: {
@@ -22,7 +23,15 @@ const styles = StyleSheet.create({
   button: {
     margin: 2,
     flexGrow: 1,
-    flexShrink: 1
+    flexShrink: 1,
+    height: 20,
+    padding: 0
+  },
+  buttonText: {
+    fontFamily: 'VT323-Regular',
+    fontSize: 14,
+    lineHeight: 17,
+    fontWeight: '900'
   },
   buttonRow: {
     display: 'flex',
@@ -37,6 +46,15 @@ const styles = StyleSheet.create({
   }
 })
 
+const Presser = ({text, onPress}) => (
+  <CustomButton
+    style={styles.button}
+    textStyle={styles.buttonText}
+    text={text}
+    onPress={onPress}
+  />
+)
+
 export default props => {
   const dispatch = useDispatch()
 
@@ -45,7 +63,7 @@ export default props => {
 
   const handleTestPatternClick = () => dispatch(thunks.testPattern())
 
-  const handleNewGameClick = () => {}
+  const handleNewGameClick = () => dispatch(thunks.newGame())
 
   const handleResetClick = () => dispatch(thunks.reset())
 
@@ -54,38 +72,48 @@ export default props => {
     payload: { }
   })
 
+  const handleLeftRotateClick = () => dispatch({type: 'inpLR'})
+  const handleRightRotateClick = () => dispatch({type: 'inpRR'})
+  const handleNextTetClick = () => dispatch({type: 'inpNextTet'})
+
   return (
     <>
       <View style={R.mergeLeft(styles.game, R.defaultTo({}, props.style))}>
         <Matrix style={styles.matrix} />
       </View>
       <View style={styles.buttonRow}>
-        <View style={styles.button}>
-          <Button
-            title="test pattern"
-            onPress={handleTestPatternClick}
-          />
-        </View>
-        <View style={styles.button}>
-          <Button
-            title="new game"
-            onPress={handleNewGameClick}
-          />
-        </View>
+        <Presser
+          text="rot L"
+          onPress={handleLeftRotateClick}
+        />
+        <Presser
+          text="rot R"
+          onPress={handleRightRotateClick}
+        />
+        <Presser
+          text="next tet"
+          onPress={handleNextTetClick}
+        />
       </View>
       <View style={styles.buttonRow}>
-        <View style={styles.button}>
-          <Button
-            title="toggle style"
-            onPress={handleToggleStyleClick}
-          />
-        </View>
-        <View style={styles.button}>
-          <Button
-            title="reset"
-            onPress={handleResetClick}
-          />
-        </View>
+        <Presser
+          text="test pattern"
+          onPress={handleTestPatternClick}
+        />
+        <Presser
+          text="new game"
+          onPress={handleNewGameClick}
+        />
+      </View>
+      <View style={styles.buttonRow}>
+        <Presser
+          text="toggle style"
+          onPress={handleToggleStyleClick}
+        />
+        <Presser
+          text="reset"
+          onPress={handleResetClick}
+        />
       </View>
     </>
   )

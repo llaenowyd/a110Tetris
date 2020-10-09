@@ -1,6 +1,6 @@
 import * as R from 'ramda'
 
-import { getNextTet, rand } from '../Random'
+import { getNextTet } from '../Random'
 
 import tickThunk from './tickThunk'
 
@@ -25,7 +25,7 @@ const makeRandomFillThunk = () => (dispatch, getState) =>
             })
           }
         )
-      })(size[0]*size[1])
+      })(R.apply(R.multiply)(size))
   )(
     R.prop('game', getState())
   )
@@ -74,14 +74,14 @@ const makeStopTickThunk = () =>
 
 export default {
   newGame: () => (dispatch, getState) =>
-    makeStopTickThunk()(dispatch, getState).then(
-      () => {
-        dispatch({type: 'reset', payload: {}})
-        dispatch({type: 'setupNewGame', payload: {}})
-      }
-    ).then(
-      () => makeStartTickThunk('game')(dispatch, getState)
-    ),
+    R.pipeWith(
+      R.andThen,
+      [
+        () => makeStopTickThunk()(dispatch, getState),
+        () => dispatch({type: 'reset', payload: {}}),
+        () => makeStartTickThunk('game')(dispatch, getState)
+      ]
+    )(),
   reset: () => (dispatch, getState) =>
     makeStopTickThunk()(dispatch, getState).then(
       () => dispatch({type: 'reset', payload: {}})
@@ -89,9 +89,12 @@ export default {
   startTick: makeStartTickThunk,
   stopTick: makeStopTickThunk,
   testPattern: () => (dispatch, getState) =>
-    makeStopTickThunk()(dispatch, getState).then(
-      () => makeRandomFillThunk()(dispatch, getState)
-    ).then(
-      () => makeStartTickThunk('testPattern')(dispatch, getState)
-    )
+    R.pipeWith(
+      R.andThen,
+      [
+        () => makeStopTickThunk()(dispatch, getState),
+        () => makeRandomFillThunk()(dispatch, getState),
+        () => makeStartTickThunk('testPattern')(dispatch, getState)
+      ]
+    )()
 }
