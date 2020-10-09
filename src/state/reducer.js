@@ -50,20 +50,26 @@ const fallOrSettle =
 // at speed=7, clockRate-7=1 tick per clock
 // speedLimit=clockRate-1
 const clockTickReducer =
-  R.chain(
-    ([clockRate, gameLevel]) =>
-      R.over(
-        R.lensPath(['game', 'clock']),
-        R.ifElse(
-          R.lt(0),
-          R.add(-1),
-          R.always(clockRate - gameLevel - 1)
-        )
-      ),
-    R.juxt([
-      R.path(['clock', 'rate']),
-      R.path(['game', 'level'])
-    ])
+  R.compose(
+    R.chain(
+      ([clockRate, gameLevel]) =>
+        R.over(
+          R.lensPath(['game', 'clock']),
+          R.ifElse(
+            R.lt(0),
+            R.add(-1),
+            R.always(clockRate - gameLevel - 1)
+          )
+        ),
+      R.juxt([
+        R.path(['clock', 'rate']),
+        R.path(['game', 'level'])
+      ])
+    ),
+    R.when(
+      R.path(['game', 'actiTet', 'dropping']),
+      fallOrSettle
+    )
   )
 
 export const reducer =
@@ -186,7 +192,10 @@ export const reducer =
         ],
         [
           matchAction('down'),
-          down
+          R.set(
+            R.lensPath(['game', 'actiTet', 'dropping']),
+            true
+          )
         ],
         [
           matchAction('drawActiTet'),

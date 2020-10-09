@@ -6,7 +6,8 @@ const clockRate = 8
 export const initialActiTet = {
   kind: null,
   points: [],
-  pos: [0,0]
+  pos: [0,0],
+  dropping: false
 }
 
 export const getInitialState = (rows=20, cols=10) =>
