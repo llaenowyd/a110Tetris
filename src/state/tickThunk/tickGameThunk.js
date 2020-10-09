@@ -54,7 +54,7 @@ const handleInputThunk =
   )
 
 const tickGame = (dispatch, getState, checkpointIsIdle) => {
-  const {game:{actiTet:{kind:actiKind}, nextTet}} = getState()
+  const {game:{actiTet:{kind:actiKind}, clock, nextTet}} = getState()
 
   return (
     R.isNil(nextTet)
@@ -66,6 +66,22 @@ const tickGame = (dispatch, getState, checkpointIsIdle) => {
         : () => null
     ).then(
       () => handleInputThunk(dispatch, getState)
+    ).then(
+      () => {
+        if (clock === 0) {
+          dispatch({type: 'fall'})
+          if (
+            R.compose(
+              R.isNil,
+              R.path(['game', 'actiTet', 'kind'])
+            )(getState())
+          ) {
+            return takeNextTetThunk(dispatch, getState)
+          }
+        }
+      }
+    ).then(
+      () => dispatch({type: 'clockTick'})
     )
 }
 

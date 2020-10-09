@@ -4,8 +4,8 @@ import * as R from 'ramda'
 
 import { getInitialPos, makeTet } from '../tets'
 
-import { getInitialState } from './initialState'
-import { drawActiTet, leftRot, riteRot, left, rite, up, down } from './matrixReducers'
+import { getInitialState, initialActiTet } from './initialState'
+import { drawActiTet, leftRot, riteRot, left, rite, up, down, fall } from './matrixReducers'
 import { tryCatcher } from './common'
 
 const resetReducer =
@@ -13,7 +13,7 @@ const resetReducer =
     (
       ([cols, rows]) =>
         R.mergeLeft(
-          R.pick(['style'], state),
+          R.pick(['clock', 'style'], state),
           getInitialState(rows, cols)
         )
     )(
@@ -32,16 +32,55 @@ const inputReducer =
       )
   )
 
+const settle =
+  R.set(
+    R.lensPath(['game', 'actiTet']),
+    initialActiTet
+  )
+
+const fallOrSettle =
+  R.compose(
+    ([state, fell]) => fell ? state : settle(state),
+    fall
+  )
+
+// speed=level-1
+// at speed=0, clockRate=8 ticks per clock
+// at speed=1, clockRate-1=7 ticks per clock
+// at speed=7, clockRate-7=1 tick per clock
+// speedLimit=clockRate-1
+const clockTickReducer =
+  R.chain(
+    ([clockRate, gameLevel]) =>
+      R.over(
+        R.lensPath(['game', 'clock']),
+        R.ifElse(
+          R.lt(0),
+          R.add(-1),
+          R.always(clockRate - gameLevel - 1)
+        )
+      ),
+    R.juxt([
+      R.path(['clock', 'rate']),
+      R.path(['game', 'level'])
+    ])
+  )
+
 export const reducer =
   (
     matchAction =>
       R.cond([
         [
-          matchAction('newBag'),
-          (state, action) =>
-            (newBucket =>
-              R.set(R.lensPath(['game', 'bucket']), newBucket, state)
-            )(action.payload)
+          matchAction('setTick'),
+          (state, {payload: tick}) => R.over(R.lensProp('tick'), R.always(tick))(state)
+        ],
+        [
+          matchAction('clockTick'),
+          clockTickReducer
+        ],
+        [
+          matchAction('fall'),
+          fallOrSettle
         ],
         [
           matchAction('setNextTet'),
@@ -94,8 +133,8 @@ export const reducer =
           )
         ],
         [
-          matchAction('drawActiTet'),
-          drawActiTet
+          matchAction('clearInput'),
+          R.set(R.lensProp('input'), [])
         ],
         [
           matchAction('inpLR'),
@@ -150,8 +189,12 @@ export const reducer =
           down
         ],
         [
-          matchAction('clearInput'),
-          tryCatcher('clearInput')(R.set(R.lensProp('input'), []))
+          matchAction('drawActiTet'),
+          drawActiTet
+        ],
+        [
+          matchAction('reset'),
+          resetReducer
         ],
         [
           matchAction('setBucket'),
@@ -161,10 +204,6 @@ export const reducer =
               action.payload,
               state
             )
-        ],
-        [
-          matchAction('setTick'),
-          (state, {payload: tick}) => R.over(R.lensProp('tick'), R.always(tick))(state)
         ],
         [
           matchAction('toggleMatrixStyle'),
@@ -182,38 +221,6 @@ export const reducer =
               )
             )
           )
-        ],
-        [
-          matchAction('startTimer'),
-          (state, { payload: t0 }) =>
-            R.over(
-              R.lensProp('timer'),
-              R.always({t0, t1: null})
-            )(state)
-        ],
-        [
-          matchAction('stopTimer'),
-          (state, { payload: t1 }) =>
-            R.compose(
-              R.chain(
-                diagnostic =>
-                  R.over(R.lensProp('diagnostic'), R.always(diagnostic)),
-                R.compose(
-                  ({t0, t1}) => R.any(R.isNil)([t0, t1])
-                    ? '???'
-                    : `${t1 - t0}ms`,
-                  R.prop('timer')
-                )
-              ),
-              R.over(
-                R.lensPath(['timer', 't1']),
-                R.always(t1)
-              )
-            )(state)
-        ],
-        [
-          matchAction('reset'),
-          resetReducer
         ],
         [ R.T,
           (state, action) => {

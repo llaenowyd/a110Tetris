@@ -58,7 +58,7 @@ const rawEmptyBlockStyle =
   R.mergeLeft(
     rawCommonBlockStyle,
     {
-      borderColor: 'lightgrey',
+      borderColor: 'rgba(255, 255, 255, 0)',
       opacity: 0.3
     }
   )

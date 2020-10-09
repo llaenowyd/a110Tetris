@@ -15,7 +15,7 @@ export const drawActiTet = state => {
   return state
 }
 
-const setBucket =
+const pokeBucket =
   bucket =>
     (cols =>
       (i, j, k) =>
@@ -26,18 +26,18 @@ const drawPoints = ({kind, points, pos}) =>
   R.over(
     R.lensPath(['game', 'bucket']),
     bucket =>
-      (setBucket => {
+      (pokeBlock => {
         R.forEach(
           ([i,j]) =>
             (
-              ([it, jt]) => { setBucket(it, jt, kind) }
+              ([it, jt]) => { pokeBlock(it, jt, kind) }
             )(
               [pos[0]+i, pos[1]+j]
             ),
           points
         )
         return bucket
-      })(setBucket(bucket))
+      })(pokeBucket(bucket))
   )
 
 const clearPoints = ({points, pos}) => drawPoints({kind: 0, points, pos})
@@ -91,6 +91,69 @@ const rot = (n, actiTet) => {
   )
 }
 
+const applyPos =
+  R.chain(
+    ([x,y]) =>
+      R.compose(
+        R.map(([i,j]) => [i+x,j+y]),
+        R.prop('points')
+      ),
+    R.prop('pos')
+  )
+
+const isFloored =
+  R.compose(
+    R.any(
+      ([_,y]) => y < 0
+    ),
+    applyPos
+  )
+
+const isOverlap =
+  (bucket, maybeActiTet, prevActiTet) =>
+    ((maybeActiPoints, prevActiPoints) =>
+      R.any(
+        ([i,j]) =>
+          0 > R.findIndex(([ib,jb]) => ib===i && jb===j, prevActiPoints)
+           && R.defaultTo('', bucket[i]?.[j]) !== 0
+        )(maybeActiPoints)
+    )(
+      applyPos(maybeActiTet),
+      applyPos(prevActiTet)
+    )
+
+const isCollision =
+  (bucket, maybeActiTet, prevActiTet) =>
+    isFloored(maybeActiTet) || isOverlap(bucket, maybeActiTet, prevActiTet)
+
+export const fall =
+  R.chain(
+    ([bucket, prevActiTet]) =>
+      R.chain(
+        fellActiTet =>
+          state =>
+            isCollision(bucket, fellActiTet, prevActiTet)
+              ? [state, false]
+              : [
+                R.compose(
+                  R.set(R.lensPath(['game', 'actiTet']), fellActiTet),
+                  drawPoints(fellActiTet),
+                  clearPoints(prevActiTet)
+                )(state),
+                true
+              ],
+        () =>
+          R.over(
+            R.lensPath(['pos', 1]),
+            R.add(-1)
+          )(prevActiTet)
+      ),
+    R.juxt([
+      R.path(['game', 'bucket']),
+      R.path(['game', 'actiTet'])
+    ])
+  )
+
 const rotate = n => state => {
   const {game:{actiTet}} = state
   const nextActiTet = rot(n, actiTet)
@@ -106,17 +169,15 @@ export const leftRot = rotate(-1)
 
 export const riteRot = rotate(1)
 
-const isCollision = (state, maybeNextActiTet) => false
-
 const translate =
   (axIndex, op) =>
     state =>
       (([actiTet, nextActiTet]) =>
-        R.compose(
-          drawPoints(nextActiTet),
-          R.set(R.lensPath(['game', 'actiTet']), nextActiTet),
-          clearPoints(actiTet)
-        )(state)
+          R.compose(
+            drawPoints(nextActiTet),
+            R.set(R.lensPath(['game', 'actiTet']), nextActiTet),
+            clearPoints(actiTet)
+          )(state)
       )((
         actiTet => [
           actiTet,

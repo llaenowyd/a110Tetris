@@ -1,35 +1,39 @@
 
 import { getEmptyBucket } from '../bucket'
 
+const clockRate = 8
+
+export const initialActiTet = {
+  kind: null,
+  points: [],
+  pos: [0,0]
+}
+
 export const getInitialState = (rows=20, cols=10) =>
   ({
+    clock: {
+      diagnostic: null,
+      rate: clockRate
+    },
     game: {
-      size: [cols, rows],
-      nextTet: null,
-      actiTet: {
-        kind: null,
-        points: [],
-        pos: [0,0]
-      },
-      rotation: 0,
+      actiTet: initialActiTet,
       bag: [],
-      bucket: getEmptyBucket(rows, cols)
+      bucket: getEmptyBucket(rows, cols),
+      level: 1,
+      clock: clockRate,
+      nextTet: null,
+      size: [cols, rows]
     },
     input: [],
     style: {
       matrix: 0
     },
     tick: {
-      mode: null,
       idle: true,
+      interval: 100,
+      mode: null,
       next: null,
       prevT0: null,
-      skewDiagnostic: null,
-      interval: 100
-    },
-    diagnostic: null,
-    timer: {
-      t0: null,
-      t1: null
+      skewDiagnostic: null
     }
   })
