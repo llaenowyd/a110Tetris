@@ -91,28 +91,20 @@ export default props => {
           onPress={handleLeftRotateClick}
         />
         <Presser
-          text="R"
-          onPress={handleRightRotateClick}
-        />
-        <Presser
           text="<"
           onPress={handleLeftClick}
-        />
-        <Presser
-          text=">"
-          onPress={handleRightClick}
-        />
-        <Presser
-          text="^"
-          onPress={handleUpClick}
         />
         <Presser
           text="v"
           onPress={handleDownClick}
         />
         <Presser
-          text="next"
-          onPress={handleNextTetClick}
+          text=">"
+          onPress={handleRightClick}
+        />
+        <Presser
+          text="R"
+          onPress={handleRightRotateClick}
         />
       </View>
       <View style={styles.buttonRow}>

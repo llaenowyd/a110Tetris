@@ -7,6 +7,7 @@ export const initialActiTet = {
   kind: null,
   points: [],
   pos: [0,0],
+  rot: 0,
   dropping: false
 }
 
@@ -20,7 +21,7 @@ export const getInitialState = (rows=20, cols=10) =>
       actiTet: initialActiTet,
       bag: [],
       bucket: getEmptyBucket(rows, cols),
-      level: 1,
+      level: 4,
       clock: clockRate,
       nextTet: null,
       size: [cols, rows]
@@ -31,7 +32,7 @@ export const getInitialState = (rows=20, cols=10) =>
     },
     tick: {
       idle: true,
-      interval: 100,
+      interval: 80,
       mode: null,
       next: null,
       prevT0: null,

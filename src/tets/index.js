@@ -12,6 +12,33 @@ const initialOffsets = {
   Z: [[0,2],[1,2],[1,1],[2,1]]
 }
 
+const commonKicks = [
+  [[0,0], [0,0], [0,0], [0,0], [0,0]],
+  [[0,0], [1,0], [1,-1], [0,2], [1,2]],
+  [[0,0], [0,0], [0,0], [0,0], [0,0]],
+  [[0,0], [-1,0], [-1,-1], [0,2], [-1,2]]
+]
+
+const kicks = {
+  I: [
+    [[0, 0], [-1, 0], [2, 0], [-1, 0], [2, 0]],
+    [[-1, 0], [0, 0], [0, 0], [0,1], [0,-2]],
+    [[-1,1], [1,1], [-2,1], [1, 0], [-2, 0]],
+    [[0,1], [0,1], [0,1], [0,-1], [0,2]]
+  ],
+  J: commonKicks,
+  L: commonKicks,
+  O: [
+    [[0, 0]],
+    [[0,-1]],
+    [[-1,-1]],
+    [[-1, 0]]
+  ],
+  S: commonKicks,
+  T: commonKicks,
+  Z: commonKicks
+}
+
 const getInitialPos =
   (cols, rows) =>
     tet =>
@@ -78,4 +105,4 @@ const palette = {
   }
 }
 
-export { getInitialPos, makeTet, palette, tetset }
+export { getInitialPos, kicks, makeTet, palette, tetset }
