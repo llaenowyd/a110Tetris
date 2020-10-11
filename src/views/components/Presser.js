@@ -19,12 +19,14 @@ const styles = StyleSheet.create({
   view: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'stretch',
+    alignItems: 'center',
     justifyContent: 'center',
     flexGrow: 0,
     flexShrink: 0,
     flexBasis: 'auto',
-    backgroundColor: '#90a090',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderStyle: 'solid',
+    borderColor: 'darkgreen',
     borderRadius: 5,
     padding: 4
   },
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
   imageBg: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'stretch',
+    alignItems: 'center',
     justifyContent: 'center'
   },
   icon: {
@@ -62,18 +64,12 @@ const styles = StyleSheet.create({
 
   },
   pressed: {
-    backgroundColor: '#5d797a',
-    color: '#ffd0be'
   },
   unpressed: {
-    backgroundColor: '#c0fbff',
-    color: '#635049'
   },
   textPressed: {
-
   },
   textUnpressed: {
-
   }
 })
 
@@ -82,7 +78,7 @@ export default props => {
 
   const getViewStyle =
     pressed =>
-      R.mergeRight(
+      R.mergeLeft(
         R.defaultTo({}, props.style),
         R.mergeRight(
           styles.view,
