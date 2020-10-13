@@ -42,7 +42,7 @@ const rot1 =
       R.compose(
         R.over(
           R.lensProp('points'),
-          points => taglog('rotatedPoints')(R.map(R.cond(pointOps)))(taglog('points')(points))
+          points => R.map(R.cond(pointOps))(points)
         ),
         R.over(
           R.lensProp('rot'),
