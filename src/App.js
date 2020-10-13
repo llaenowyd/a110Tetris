@@ -58,7 +58,6 @@ const Debug = () => {
   )
 }
 
-//<StatusBar backgroundColor="#101010" barStyle="light-content" />
 const App = () => (
     <Provider>
       <SafeAreaView style={{height: '100%'}}>
