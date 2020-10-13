@@ -4,7 +4,7 @@ import {useSelector} from 'react-redux'
 import * as R from 'ramda'
 
 import renameKeys from '../../fun/renameKeys'
-import { palette as oldPalette, tetset } from '../../tets'
+import { tetset } from '../../tets'
 
 import { block as blockTheme } from '../../theme.js'
 
@@ -52,19 +52,6 @@ const blockStyles =
             getBlockStyleForTetKind(tetKind),
             rawCommonBlockStyle
           )
-          /*
-          R.compose(
-            R.mergeLeft(rawCommonBlockStyle),
-            R.applySpec({
-              backgroundColor: R.path(['primary', tet]),
-              color: R.path(['complement', tet]),
-              borderTopColor: R.path(['highlight', tet]),
-              borderRightColor: R.path(['shadow', tet]),
-              borderBottomColor: R.path(['shadow', tet]),
-              borderLeftColor: R.path(['highlight', tet])
-            })
-          )(oldPalette)
-           */
         ]
     )
   )(tetset)
