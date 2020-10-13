@@ -1,6 +1,6 @@
 import * as R from 'ramda'
 
-import {complement, logShade} from './fun/shadeHexColor'
+import {complement, logShade} from './fun/hexcolor'
 
 export const darkCharcoal = '#101010'
 export const lightCharcoal = '#202020'
