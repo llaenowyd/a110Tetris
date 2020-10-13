@@ -96,15 +96,15 @@ const kickers = {
   Z: commonKickers
 }
 
+// shouldn't it be required
+const getBoundingRadius = kind => kind === 'I' ? 2 : 1
+
 const getInitialPos =
   (cols, rows) =>
-    kind =>
-      (sz =>
-        [
-          Math.floor(cols / 2) - sz - 1,
-          rows - sz
-        ]
-      )(kind === 'I' ? 2 : 1)
+    [
+      Math.floor(cols / 2) - 1,
+      rows
+    ]
 
 const getInitialOffsets = R.flip(R.prop)(blockOffsets)
 
@@ -116,15 +116,11 @@ const blockOffsetsTable =
 
 const makeTet =
   (cols, rows) =>
-    (gip =>
-      R.applySpec({
-        kind: R.identity,
-        points: R.flip(R.prop)(blockOffsetsTable),
-        pos: gip
-      })
-    )(
-      getInitialPos(cols, rows)
-    )
+    R.applySpec({
+      kind: R.identity,
+      points: R.flip(R.prop)(blockOffsetsTable),
+      pos: R.always(getInitialPos(cols, rows))
+    })
 
 const palette = {
   primary: {
@@ -165,4 +161,4 @@ const palette = {
   }
 }
 
-export { getInitialPos, kickers, kicks, makeTet, palette, tetset }
+export { kickers, makeTet, palette, tetset }

@@ -80,7 +80,6 @@ const rot1AndTest = (bucket, cw, tet) => {
 
   const kicks = kickers[tet.kind][tet.rot][cw?1:0]
 
-  console.log('looking at kicks')
   return R.find(
     R.compose(
       isOpen(bucket, tet),
