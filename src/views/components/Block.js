@@ -1,5 +1,5 @@
 import React from 'react'
-import {StyleSheet, Text, View} from 'react-native'
+import {Animated, StyleSheet, View} from 'react-native'
 import {useSelector} from 'react-redux'
 import * as R from 'ramda'
 
@@ -12,8 +12,7 @@ const rawCommonBlockStyle = {
   flexGrow: 1,
   borderStyle: 'solid',
   borderWidth: 4,
-  borderRadius: 4,
-  opacity: 0.5
+  borderRadius: 4
 }
 
 const annoBlockStyle = {
@@ -56,6 +55,33 @@ const blockStyles =
     )
   )(tetset)
 
+const flashBlockStyles =
+  R.compose(
+    renameKeys(
+      R.compose(
+        R.fromPairs,
+        R.map(
+          tet => [tet, R.concat('f', tet)]
+        )
+      )(tetset)
+    ),
+    R.fromPairs,
+    R.map(
+      ([tetKind, style]) => [
+          tetKind,
+          R.mergeLeft(
+            {
+              backgroundColor: blockTheme[tetKind].complement,
+              opacity: 0
+            }
+          )
+        ]
+    ),
+    R.toPairs
+  )(
+    blockStyles
+  )
+
 const emptyBlockStyle =
   R.mergeLeft(
     blockStyleForEmpty,
@@ -89,52 +115,69 @@ const emptyAnnoBlockStyle =
   )
 
 const styles = StyleSheet.create({
-  view: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    justifyContent: 'space-evenly'
-  },
-  background: {
-    display: 'flex',
-    flex: 1
-  },
-  row: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 'auto',
-    alignItems: 'stretch',
-    justifyContent: 'space-evenly',
-    height: '50%',
-  },
   MT: emptyBlockStyle,
   aMT: emptyAnnoBlockStyle,
   ...blockStyles,
   ...annoBlockStyles
 })
 
-export default ({i, j}) => {
+export default ({i, j, isCompleted}) => {
   const matrixStyle = useSelector(R.path(['style', 'matrix']))
-  const tet = useSelector(R.path(['game', 'bucket', i, j]))
+  const tetKind = useSelector(R.path(['game', 'bucket', i, j]))
+  const flash = useSelector(R.path(['game', 'flash', j]))
 
-  const style =
-    styles[
-      R.compose(
-        R.when(
-          R.thunkify(R.equals(1))(matrixStyle),
-          R.concat('a')
-        ),
-        R.when(
-          R.equals(0),
-          R.always('MT')
-        )
-      )(tet)
-      ]
+  const flashTimer = flash.timer
+
+  const styleKey =
+    R.compose(
+      R.when(
+        R.thunkify(R.equals(1))(matrixStyle),
+        R.concat('a')
+      ),
+      R.when(
+        R.equals(0),
+        R.always('MT')
+      )
+    )(tetKind)
+
+  const topStyle = styles[styleKey]
+
+  const bottomStyle = R.defaultTo({}, flashBlockStyles[tetKind])
+
+  const opacities = isCompleted && flashTimer ? [
+      {
+        opacity: flashTimer.interpolate({
+          inputRange: [0, 100],
+          outputRange: [0, 0.5]
+        })
+      },
+      {
+        opacity: flashTimer.interpolate({
+          inputRange: [0, 100],
+          outputRange: [0.5, 0]
+        })
+      },
+    ] : [
+      {
+        opacity: 0.5
+      },
+      {
+        opacity: 0
+      }
+    ]
 
   return {
-    0: () => (<View style={style}/>),
-    1: () => (<Text style={style}>{tet}</Text>)
+    0: () => (
+      <Animated.View style={[topStyle, opacities[0]]}>
+        <Animated.View style={[bottomStyle, opacities[1]]} />
+      </Animated.View>
+    ),
+    1: () => (
+      <Animated.View style={[topStyle, opacities[0]]}>
+        <Animated.Text style={[bottomStyle, opacities[1]]}>
+          {tetKind}
+        </Animated.Text>
+      </Animated.View>
+    )
   }[matrixStyle]()
 }

@@ -2,10 +2,12 @@ import { Alert } from 'react-native'
 
 import * as R from 'ramda'
 
+import { completeRows } from '../bucket'
 import { makeTet } from '../tets'
 
+import { setFlash, stopFlash } from './animation'
 import { getInitialState, initialActiTet } from './initialState'
-import { drawActiTet, leftRot, riteRot, left, rite, up, fall } from './matrixReducers'
+import { clearCompletedRows, drawActiTet, leftRot, riteRot, left, rite, up, fall } from './matrixReducers'
 import { tryCatcher } from './common'
 
 const resetReducer =
@@ -39,9 +41,23 @@ const settle =
   )
 
 const fallOrSettle =
-  R.compose(
-    ([state, fell]) => fell ? state : settle(state),
-    fall
+  tryCatcher('fallOrSettle')(
+    R.compose(
+      R.ifElse(
+        R.nth(1), // did fall
+        R.nth(0), // just state
+        R.compose(
+          settle,
+          R.chain(
+            setFlash,
+            R.path(['game', 'completedRows'])
+          ),
+          completeRows,
+          R.nth(0)
+        )
+      ),
+      fall
+    )
   )
 
 // speed=level-1
@@ -176,6 +192,13 @@ export const reducer =
           R.set(
             R.lensPath(['game', 'actiTet', 'dropping']),
             true
+          )
+        ],
+        [
+          matchAction('clearCompletedRows'),
+          R.compose(
+            clearCompletedRows,
+            stopFlash
           )
         ],
         [

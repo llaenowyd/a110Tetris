@@ -54,12 +54,16 @@ const handleInputThunk =
   )
 
 const tickGame = (dispatch, getState, checkpointIsIdle) => {
-  const {game:{actiTet:{kind:actiKind}, clock, nextTet}} = getState()
+  const {game:{actiTet:{kind:actiKind}, clock, completedRows, nextTet}} = getState()
 
   return (
     R.isNil(nextTet)
       ? nextTetThunk(dispatch, getState)
       : Promise.resolve()
+    ).then(
+      () => R.isEmpty(completedRows)
+        ? null
+        : dispatch({type:'clearCompletedRows'})
     ).then(
       () => R.isNil(actiKind)
         ? takeNextTetThunk(dispatch, getState)
