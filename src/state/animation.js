@@ -14,23 +14,65 @@ const makeCompletedRowTimer =
         id: ++id,
         timer: R.identity,
         animation: timer => {
-          const ani = Animated.loop(
-            Animated.sequence([
+          const ani = Animated.sequence([
               Animated.timing(timer, {
-                toValue: 100,
-                duration: Math.floor(1/8 * approxMsPerClock),
+                toValue: 1,
+                delay: 15,
+                duration: Math.floor(1/16 * approxMsPerClock),
                 useNativeDriver: true,
-                easing: Easing.exp
+                easing: Easing.linear
               }),
               Animated.timing(timer, {
-                toValue: 100,
-                duration: Math.floor(1/8 * approxMsPerClock),
+                toValue: 0,
+                duration: Math.floor(1/16 * approxMsPerClock),
                 useNativeDriver: true,
-                easing: Easing.exp
+                easing: Easing.linear
+              }),
+              Animated.timing(timer, {
+                toValue: 1,
+                duration: Math.floor(1/16 * approxMsPerClock),
+                useNativeDriver: true,
+                easing: Easing.linear
+              }),
+              Animated.timing(timer, {
+                toValue: 0,
+                duration: Math.floor(1/16 * approxMsPerClock),
+                useNativeDriver: true,
+                easing: Easing.linear
+              }),
+              Animated.timing(timer, {
+                toValue: 1,
+                duration: Math.floor(1/16 * approxMsPerClock),
+                useNativeDriver: true,
+                easing: Easing.linear
+              }),
+              Animated.timing(timer, {
+                toValue: 0,
+                duration: Math.floor(1/16 * approxMsPerClock),
+                useNativeDriver: true,
+                easing: Easing.linear
+              }),
+              Animated.timing(timer, {
+                toValue: 1,
+                duration: Math.floor(1/16 * approxMsPerClock),
+                useNativeDriver: true,
+                easing: Easing.linear
+              }),
+              Animated.timing(timer, {
+                toValue: 0,
+                duration: Math.floor(1/16 * approxMsPerClock),
+                useNativeDriver: true,
+                easing: Easing.linear
               })
-            ]),
-            { iterations: -1 }
-          )
+              // Animated.timing(timer, {
+              //   toValue: 100,
+              //   duration: Math.floor(1/16 * approxMsPerClock),
+              //   useNativeDriver: true,
+              //   easing: Easing.exp
+              // })
+            ])
+            // , { iterations: -1 } )
+
           ani.start()
           return ani
         }

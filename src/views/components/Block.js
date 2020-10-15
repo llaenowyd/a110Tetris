@@ -8,7 +8,7 @@ import { tetset } from '../../tets'
 
 import { block as blockTheme } from '../../theme.js'
 
-const rawCommonBlockStyle = {
+const commonBlockStyle = {
   flexGrow: 1,
   borderStyle: 'solid',
   borderWidth: 4,
@@ -49,43 +49,16 @@ const blockStyles =
           tetKind,
           R.mergeLeft(
             getBlockStyleForTetKind(tetKind),
-            rawCommonBlockStyle
+            commonBlockStyle
           )
         ]
     )
   )(tetset)
 
-const flashBlockStyles =
-  R.compose(
-    renameKeys(
-      R.compose(
-        R.fromPairs,
-        R.map(
-          tet => [tet, R.concat('f', tet)]
-        )
-      )(tetset)
-    ),
-    R.fromPairs,
-    R.map(
-      ([tetKind, style]) => [
-          tetKind,
-          R.mergeLeft(
-            {
-              backgroundColor: blockTheme[tetKind].complement,
-              opacity: 0
-            }
-          )
-        ]
-    ),
-    R.toPairs
-  )(
-    blockStyles
-  )
-
 const emptyBlockStyle =
   R.mergeLeft(
     blockStyleForEmpty,
-    rawCommonBlockStyle
+    commonBlockStyle
   )
 
 const annoBlockStyles =
@@ -140,44 +113,22 @@ export default ({i, j, isCompleted}) => {
       )
     )(tetKind)
 
-  const topStyle = styles[styleKey]
+  const blockStyle = styles[styleKey]
 
-  const bottomStyle = R.defaultTo({}, flashBlockStyles[tetKind])
-
-  const opacities = isCompleted && flashTimer ? [
-      {
-        opacity: flashTimer.interpolate({
-          inputRange: [0, 100],
-          outputRange: [0, 0.5]
-        })
-      },
-      {
-        opacity: flashTimer.interpolate({
-          inputRange: [0, 100],
-          outputRange: [0.5, 0]
-        })
-      },
-    ] : [
-      {
-        opacity: 0.5
-      },
-      {
-        opacity: 0
+  const opacity = isCompleted && flashTimer ? {
+        opacity: flashTimer
+      } : {
+        opacity: 1
       }
-    ]
 
   return {
     0: () => (
-      <Animated.View style={[topStyle, opacities[0]]}>
-        <Animated.View style={[bottomStyle, opacities[1]]} />
-      </Animated.View>
+      <Animated.View style={[blockStyle, opacity]} />
     ),
     1: () => (
-      <Animated.View style={[topStyle, opacities[0]]}>
-        <Animated.Text style={[bottomStyle, opacities[1]]}>
-          {tetKind}
-        </Animated.Text>
-      </Animated.View>
+      <Animated.Text style={[blockStyle, opacity]}>
+        {tetKind}
+      </Animated.Text>
     )
   }[matrixStyle]()
 }
