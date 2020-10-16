@@ -20,22 +20,15 @@ const {background} = themes[themeName]
 
 const styles = StyleSheet.create({
   view: {
-    paddingBottom: 25,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
     alignItems: 'stretch',
+    flex: 1,
     backgroundColor: background
   },
   matrix: {
-    flexGrow: 1,
-    flexShrink: 0,
-    flexBasis: 'auto'
+    flex: 8
   },
   controls: {
-    flexGrow: 0,
-    flexShrink: 1,
-    flexBasis: 'auto'
+    flex: 2
   }
 })
 
@@ -43,7 +36,6 @@ export default props => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    // dispatch(thunks.testPattern())
     return () => dispatch({type: actions.stopTick})
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 

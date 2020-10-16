@@ -2,6 +2,8 @@ import * as R from 'ramda'
 
 import Color from 'color'
 
+const black = 'black'
+
 const blackViolet = '#08001b'
 const darkViolet = '#0c0029'
 const violet = '#3500ba'
@@ -97,7 +99,7 @@ export default {
     },
     menu: {
       background: lightCharcoal,
-      borderColor: 'black',
+      borderColor: black,
       button: {
         background: lightOlive,
         foreground: darkOlive,
@@ -118,11 +120,11 @@ export default {
       button: {
         background: darkViolet,
         borderColor: violet,
-        foreground: violet
+        foreground: lightPistachio
       },
       buttonActive: {
         background: violet,
-        color: darkViolet
+        foreground: darkViolet
       }
     },
     menu: {
@@ -134,8 +136,8 @@ export default {
         borderColor: violet
       },
       buttonActive: {
-        background: darkPlum,
-        foreground: forestGreen
+        background: lightPistachio,
+        foreground: darkViolet
       }
     },
     blocks,

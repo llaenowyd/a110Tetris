@@ -10,7 +10,7 @@ import {
 import * as R from 'ramda'
 
 import LittleButtonCluster from './LittleButtonCluster'
-import Presser from './components/Presser'
+import IconPresser from './components/IconPresser'
 
 import { actions } from '../state/actions'
 import themes from '../themes'
@@ -20,49 +20,40 @@ const {controls:controlsTheme} = themes[themeName]
 
 const styles = StyleSheet.create({
   view: {
-    display: 'flex',
+    backgroundColor: controlsTheme.background,
+    paddingBottom: 10
+  },
+  row: {
+    flex: 1,
     flexDirection: 'row',
-    flexWrap: 'nowrap',
     alignItems: 'stretch',
     justifyContent: 'space-between',
-    backgroundColor: controlsTheme.background
+    paddingTop: 10
+  },
+  bumper: {
+    flex: 1,
+    alignItems: 'stretch'
   },
   leftBumper: {
-    display: 'flex',
-    flexDirection: 'column',
-    flexWrap: 'nowrap',
-    alignItems: 'stretch',
-    justifyContent: 'flex-end',
     marginLeft: 5,
     marginRight: 10
   },
   rightBumper: {
-    display: 'flex',
-    flexDirection: 'column',
-    flexWrap: 'nowrap',
-    alignItems: 'stretch',
-    justifyContent: 'flex-end',
     marginRight: 5,
     marginLeft: 10
   },
   center: {
-    display: 'flex',
-    flexDirection: 'column',
-    flexWrap: 'nowrap',
-    justifyContent: 'flex-end',
-    flexGrow: 1,
-    flexShrink: 1
+    flex: 3
   },
   littleCluster: {
-    marginTop: 10,
-    marginBottom: 10,
-    alignSelf: 'center'
+    flex: 1
   },
   mainButton: {
-    borderColor: controlsTheme.button.borderColor
-  },
-  downButton: {
-    alignSelf: 'stretch'
+    flex: 1,
+    borderColor: controlsTheme.button.borderColor,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderStyle: 'solid',
+    borderRadius: 5
   },
   buttonPressed: {
     backgroundColor: controlsTheme.buttonActive.background
@@ -70,18 +61,26 @@ const styles = StyleSheet.create({
   buttonUnpressed: {
     backgroundColor: controlsTheme.button.background
   },
-  cornerButton: {
-    marginTop: 10
+  buttonIcon: {
+    fontSize: 55
+  },
+  buttonIconPressed: {
+    color: controlsTheme.buttonActive.foreground
+  },
+  buttonIconUnpressed: {
+    color: controlsTheme.button.foreground
   }
 })
 
 const MainButton = props => {
   return (
-    <Presser
-      size="large"
+    <IconPresser
       style={R.mergeLeft(styles.mainButton, props.style)}
       stylePressed={styles.buttonPressed}
       styleUnpressed={styles.buttonUnpressed}
+      iconStyle={styles.buttonIcon}
+      iconStylePressed={styles.buttonIconPressed}
+      iconStyleUnpressed={styles.buttonIconUnpressed}
       icon={props.icon}
       onPress={props.onPress}
     />
@@ -105,35 +104,42 @@ const Controls = props => {
 
   return (
     <View style={viewStyle}>
-      <View style={styles.leftBumper}>
-        <MainButton
-          icon="rotl"
-          onPress={handleLeftRotateClick}
-        />
-        <MainButton
-          style={styles.cornerButton}
-          icon="left"
-          onPress={handleLeftClick}
-        />
+      <View style={styles.row}>
+        <View style={R.mergeLeft(styles.bumper, styles.leftBumper)}>
+          <MainButton
+            icon="rotl"
+            onPress={handleLeftRotateClick}
+          />
+        </View>
+        <View style={styles.center}>
+          <LittleButtonCluster style={styles.littleCluster} />
+        </View>
+        <View style={R.mergeLeft(styles.bumper, styles.rightBumper)}>
+          <MainButton
+            icon="rotr"
+            onPress={handleRightRotateClick}
+          />
+        </View>
       </View>
-      <View style={styles.center}>
-        <LittleButtonCluster style={styles.littleCluster} />
-        <MainButton
-          style={styles.downButton}
-          icon="down"
-          onPress={handleDownClick}
-        />
-      </View>
-      <View style={styles.rightBumper}>
-        <MainButton
-          icon="rotr"
-          onPress={handleRightRotateClick}
-        />
-        <MainButton
-          style={styles.cornerButton}
-          icon="rite"
-          onPress={handleRightClick}
-        />
+      <View style={styles.row}>
+        <View style={R.mergeLeft(styles.bumper, styles.leftBumper)}>
+          <MainButton
+            icon="left"
+            onPress={handleLeftClick}
+          />
+        </View>
+        <View style={styles.center}>
+          <MainButton
+            icon="down"
+            onPress={handleDownClick}
+          />
+        </View>
+        <View style={R.mergeLeft(styles.bumper, styles.rightBumper)}>
+          <MainButton
+            icon="right"
+            onPress={handleRightClick}
+          />
+        </View>
       </View>
     </View>
   )
