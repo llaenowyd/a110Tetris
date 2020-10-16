@@ -60,27 +60,22 @@ export const blocks =
   R.compose(
     R.fromPairs,
     R.map(
-      el =>
-        R.chain(
-          ({complementDarken}) =>
-              R.over(
-                R.lensIndex(1),
-                primary => ({
-                  primary: Color(primary).fade(0.5).hex(),
-                  shadow: Color(primary).darken(0.35).fade(0.5).hex(),
-                  highlight: Color(primary).lighten(0.35).fade(0.5).hex(),
-                  complement: Color(primary).rotate(180).darken(complementDarken).hex()
-                })
-              ),
-          ([tetKind]) => getTunings(tetKind)
-        )(taglog('el')(el))
+      R.chain(
+        ({complementDarken}) =>
+            R.over(
+              R.lensIndex(1),
+              primary => ({
+                primary: Color(primary).fade(0.5).hex(),
+                shadow: Color(primary).darken(0.35).fade(0.5).hex(),
+                highlight: Color(primary).lighten(0.35).fade(0.5).hex(),
+                complement: Color(primary).rotate(180).darken(complementDarken).hex()
+              })
+            ),
+        ([tetKind]) => getTunings(tetKind)
+      )
     ),
     R.toPairs
   )(blockPrimaries)
-
-export const emptyBlock = {
-  complement: darkCharcoal
-}
 
 export const themes = {
   oliveCharcoal: {
