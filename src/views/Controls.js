@@ -13,7 +13,10 @@ import LittleButtonCluster from './LittleButtonCluster'
 import Presser from './components/Presser'
 
 import { actions } from '../state/actions'
-import * as Theme from '../theme'
+import { themes } from '../theme'
+
+const themeName = 'arcade'
+const {controls:controlsTheme} = themes[themeName]
 
 const styles = StyleSheet.create({
   view: {
@@ -21,7 +24,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'nowrap',
     alignItems: 'stretch',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    backgroundColor: controlsTheme.background
   },
   leftBumper: {
     display: 'flex',
@@ -55,16 +59,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   mainButton: {
-    borderColor: Theme.darkOlive
+    borderColor: controlsTheme.button.borderColor
   },
   downButton: {
     alignSelf: 'stretch'
   },
   buttonPressed: {
-    backgroundColor: Theme.plum
+    backgroundColor: controlsTheme.buttonActive.background
   },
   buttonUnpressed: {
-    backgroundColor: Theme.lightOlive
+    backgroundColor: controlsTheme.button.background
   },
   cornerButton: {
     marginTop: 10

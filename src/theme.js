@@ -2,51 +2,144 @@ import * as R from 'ramda'
 
 import Color from 'color'
 
-export const darkCharcoal = '#101010'
-export const lightCharcoal = '#202020'
+const blackViolet = '#08001b'
+const darkViolet = '#0c0029'
+const violet = '#3500ba'
+const darkPistachio = '#212108'
+const lightPistachio = '#dfe07f'
 
-export const darkOlive = '#1E261D'
-export const lightOlive = '#5C7B57'
+const darkCharcoal = '#101010'
+const lightCharcoal = '#202020'
 
-export const darkPlum = '#404055'
-export const plum = '#646476'
+const darkOlive = '#1E261D'
+const lightOlive = '#5C7B57'
 
-export const forestGreen = '#216317'
+const blackPlum = '#210029'
+const darkPlum = '#404055'
+const plum = '#646476'
 
-export const block =
+const midnight = '#000929'
+const forestGreen = '#216317'
+
+const blockPrimaries = {
+  I: 'aqua',
+  J: 'blue',
+  L: 'orange',
+  O: 'yellow',
+  S: 'green',
+  T: 'darkorchid',
+  Z: 'red'
+}
+
+const blockDefaults = {
+  complementDarken: 0.35
+}
+
+const blockTunings = {
+  J: {
+    complementDarken: -0.55
+  },
+  T: {
+    complementDarken: -0.75
+  },
+  Z: {
+    complementDarken: -0.75
+  }
+}
+
+const getTunings =
+  R.compose(
+    R.mergeRight(blockDefaults),
+    R.defaultTo({}),
+    R.flip(R.prop)(blockTunings)
+  )
+
+const taglog = tag => x => { console.log(tag, x); return x }
+
+export const blocks =
+  R.compose(
+    R.fromPairs,
     R.map(
-      ({primary, complementDarken}) => ({
-        primary: Color(primary).fade(0.5).hex(),
-        shadow: Color(primary).darken(0.35).fade(0.5).hex(),
-        highlight: Color(primary).lighten(0.35).fade(0.5).hex(),
-        complement: Color(primary).rotate(180).darken(R.defaultTo(0.35, complementDarken)).hex()
-      })
-    )({
-      I: {
-        primary: '#00ffff'
+      el =>
+        R.chain(
+          ({complementDarken}) =>
+              R.over(
+                R.lensIndex(1),
+                primary => ({
+                  primary: Color(primary).fade(0.5).hex(),
+                  shadow: Color(primary).darken(0.35).fade(0.5).hex(),
+                  highlight: Color(primary).lighten(0.35).fade(0.5).hex(),
+                  complement: Color(primary).rotate(180).darken(complementDarken).hex()
+                })
+              ),
+          ([tetKind]) => getTunings(tetKind)
+        )(taglog('el')(el))
+    ),
+    R.toPairs
+  )(blockPrimaries)
+
+export const emptyBlock = {
+  complement: darkCharcoal
+}
+
+export const themes = {
+  oliveCharcoal: {
+    background: darkCharcoal,
+    controls: {
+      background: darkCharcoal,
+      button: {
+        background: lightOlive,
+        borderColor: darkOlive,
+        color: darkOlive
       },
-      J: {
-        primary: '#0000ff',
-        complementDarken: -0.55
-      },
-      L: {
-        primary: '#ffa500'
-      },
-      O: {
-        primary: '#ffff00'
-      },
-      S: {
-        primary: '#00ff00'
-      },
-      T: {
-        primary: '#9932cc',
-        complementDarken: -0.75
-      },
-      Z: {
-        primary: '#ff0000',
-        complementDarken: -0.75
-      },
-      0: {
-        primary: '#ffffff'
+      buttonActive: {
+        background: plum
       }
-    })
+    },
+    menu: {
+      background: lightCharcoal,
+      borderColor: 'black',
+      button: {
+        background: lightOlive,
+        foreground: darkOlive,
+        borderColor: darkOlive
+      },
+      buttonActive: {
+        background: darkPlum,
+        foreground: forestGreen
+      }
+    },
+    blocks,
+    emptyBlock
+  },
+  arcade: {
+    background: blackViolet,
+    controls: {
+      background: blackViolet,
+      button: {
+        background: darkViolet,
+        borderColor: violet,
+        foreground: violet
+      },
+      buttonActive: {
+        background: violet,
+        color: darkViolet
+      }
+    },
+    menu: {
+      background: midnight,
+      borderColor: darkViolet,
+      button: {
+        background: darkViolet,
+        foreground: lightPistachio,
+        borderColor: violet
+      },
+      buttonActive: {
+        background: darkPlum,
+        foreground: forestGreen
+      }
+    },
+    blocks,
+    emptyBlock
+  }
+}

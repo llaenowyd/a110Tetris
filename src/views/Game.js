@@ -13,7 +13,10 @@ import Matrix from './Matrix'
 import Controls from './Controls'
 
 import { actions } from '../state/actions'
-import * as Theme from '../theme'
+import { themes } from '../theme'
+
+const themeName = 'arcade'
+const {background} = themes[themeName]
 
 const styles = StyleSheet.create({
   view: {
@@ -22,7 +25,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'stretch',
-    backgroundColor: Theme.darkCharcoal
+    backgroundColor: background
   },
   matrix: {
     flexGrow: 1,

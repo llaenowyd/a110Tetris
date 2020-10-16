@@ -11,7 +11,10 @@ import * as R from 'ramda'
 
 import { actions } from '../state/actions'
 import thunks from '../state/thunks'
-import * as Theme from '../theme'
+import { themes } from '../theme'
+
+const themeName = 'arcade'
+const {menu:menuTheme} = themes[themeName]
 
 import Presser from './components/Presser'
 
@@ -32,9 +35,9 @@ const styles = StyleSheet.create({
     paddingLeft: padding,
     paddingBottom: 0,
     borderRadius: 4,
-    backgroundColor: Theme.lightCharcoal,
+    backgroundColor: menuTheme.background,
     borderStyle: 'solid',
-    borderColor: 'black',
+    borderColor: menuTheme.borderColor,
     borderWidth: StyleSheet.hairlineWidth
   },
   column: {
@@ -51,20 +54,20 @@ const styles = StyleSheet.create({
     marginLeft: padding
   },
   littleButton: {
-    borderColor: Theme.darkOlive,
+    borderColor: menuTheme.button.borderColor,
     marginBottom: padding
   },
   littleButtonPressed: {
-    backgroundColor: Theme.darkPlum
+    backgroundColor: menuTheme.buttonActive.background
   },
   littleButtonUnpressed: {
-    backgroundColor: Theme.lightOlive
+    backgroundColor: menuTheme.button.background
   },
   littleButtonTextPressed: {
-    color: Theme.forestGreen
+    color: menuTheme.buttonActive.foreground
   },
   littleButtonTextUnpressed: {
-    color: Theme.darkOlive
+    color: menuTheme.button.foreground
   }
 })
 
