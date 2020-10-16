@@ -13,7 +13,7 @@ import Matrix from './Matrix'
 import Controls from './Controls'
 
 import { actions } from '../state/actions'
-import { themes } from '../theme'
+import themes from '../themes'
 
 const themeName = 'arcade'
 const {background} = themes[themeName]

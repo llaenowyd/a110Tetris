@@ -6,7 +6,7 @@ import * as R from 'ramda'
 import renameKeys from '../../fun/renameKeys'
 import { tetset } from '../../tets'
 
-import { themes } from '../../theme.js'
+import themes from '../../themes.js'
 
 const themeName = 'arcade'
 const {blocks:blockTheme, emptyBlock:emptyBlockTheme} = themes[themeName]

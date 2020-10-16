@@ -56,7 +56,7 @@ const getTunings =
 
 const taglog = tag => x => { console.log(tag, x); return x }
 
-export const blocks =
+const blocks =
   R.compose(
     R.fromPairs,
     R.map(
@@ -77,7 +77,11 @@ export const blocks =
     R.toPairs
   )(blockPrimaries)
 
-export const themes = {
+const emptyBlock = {
+  complement: darkCharcoal
+}
+
+export default {
   oliveCharcoal: {
     background: darkCharcoal,
     controls: {

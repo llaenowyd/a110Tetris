@@ -11,7 +11,7 @@ import * as R from 'ramda'
 
 import { actions } from '../state/actions'
 import thunks from '../state/thunks'
-import { themes } from '../theme'
+import themes from '../themes'
 
 const themeName = 'arcade'
 const {menu:menuTheme} = themes[themeName]

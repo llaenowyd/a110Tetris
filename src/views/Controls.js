@@ -13,7 +13,7 @@ import LittleButtonCluster from './LittleButtonCluster'
 import Presser from './components/Presser'
 
 import { actions } from '../state/actions'
-import { themes } from '../theme'
+import themes from '../themes'
 
 const themeName = 'arcade'
 const {controls:controlsTheme} = themes[themeName]
