@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   score: {
-    flex: 2
+    flex: 4
   }
 })
 

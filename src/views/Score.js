@@ -13,6 +13,7 @@ const {scoreAndNextTet: scoreAndNextTetTheme} = themes[themeName]
 
 const styles = StyleSheet.create({
   text: {
+    backgroundColor: 'darkgreen',
     flex: 1,
     color: scoreAndNextTetTheme.foreground,
     fontFamily: 'Early GameBoy',
@@ -34,10 +35,13 @@ const leftPad =
     )
 
 export default props => {
-  const score = useSelector(R.path(['game', 'score']))
+  let score = useSelector(R.path(['game', 'score']))
+  let level = useSelector(R.path(['game', 'level']))
 
   if (R.isNil(score)) {
-    return (<View />)
+    //return (<View />)
+    score = 1321230
+    level = 12
   }
 
   return (
@@ -47,7 +51,12 @@ export default props => {
       numberOfLines={1}
       style={R.mergeLeft(R.defaultTo({}, props.style), styles.text)}
     >
-      {leftPad(' ', 10)(String(score))}
+      {
+        R.concat(
+          leftPad(' ', 10)(String(score)),
+          ` Lv.${level}`
+        )
+      }
     </Text>
   )
 }

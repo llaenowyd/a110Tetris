@@ -34,6 +34,8 @@ export const getInitialState = (rows=20, cols=10) =>
       flash: R.repeat({timer: null, animation: null}, rows),
       level: 4,
       nextTet: null,
+      rowsCleared: 0,
+      rowsPerLevel: 10,
       score: null,
       size: [cols, rows]
     },

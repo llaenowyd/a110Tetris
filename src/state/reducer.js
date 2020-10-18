@@ -74,29 +74,44 @@ const useNextTet =
     ])
   )
 
-const addPointsReducer =
+const addPointsAndMaybeLevelUp =
   R.chain(
-    R.compose(
-      ([numCompletedRows, level]) =>
-        R.over(
-          R.lensPath(['game', 'score']),
-          [
-            R.identity,
-            R.add((level+1)*40),
-            R.add((level+1)*100),
-            R.add((level+1)*300),
-            R.add((level+1)*1200)
-          ][
-            R.min(numCompletedRows, 4)
+    ([numCompletedRows, level, prevRowsCleared, rowsPerLevel]) =>
+      (nextRowsCleared =>
+        R.compose(
+          R.over(
+            R.lensPath(['game', 'level']),
+            nextRowsCleared % rowsPerLevel < prevRowsCleared % rowsPerLevel
+              ? R.add(1) : R.identity
+          ),
+          R.set(
+            R.lensPath(['game', 'rowsCleared']),
+            nextRowsCleared
+          ),
+          R.over(
+            R.lensPath(['game', 'score']),
+            [
+              R.identity,
+              R.add((level+1)*40),
+              R.add((level+1)*100),
+              R.add((level+1)*300),
+              R.add((level+1)*1200)
+            ][
+              R.min(numCompletedRows, 4)
             ]
+          )
         )
-    ),
+      )(
+        prevRowsCleared + numCompletedRows
+      ),
     R.juxt([
       R.compose(
         R.length,
         R.path(['game', 'completedRows'])
       ),
-      R.path(['game', 'level'])
+      R.path(['game', 'level']),
+      R.path(['game', 'rowsCleared']),
+      R.path(['game', 'rowsPerLevel'])
     ])
   )
 
@@ -107,7 +122,7 @@ const fallOrSettleAndUseNext =
       R.nth(0), // just state
       R.compose(
         useNextTet,
-        addPointsReducer,
+        addPointsAndMaybeLevelUp,
         R.chain(
           setFlash,
           R.path(['game', 'completedRows'])
@@ -133,7 +148,7 @@ const clockTickReducer =
           R.ifElse(
             R.lt(0),
             R.add(-1),
-            R.always(clockRate - gameLevel - 1)
+            R.always(R.max(1, clockRate - gameLevel - 1))
           )
         ),
       R.juxt([
