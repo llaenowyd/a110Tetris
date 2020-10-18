@@ -57,5 +57,5 @@ export const SoundController =
       [dispatch, prevTrack]
     )
 
-    return (<>{null}</>)
+    return null
   }
