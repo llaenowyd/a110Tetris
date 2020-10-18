@@ -13,6 +13,7 @@ import * as R from 'ramda'
 
 import { Provider } from './state'
 import themes from './themes'
+import { SoundController } from './Sounds'
 
 import Game from './views/Game'
 
@@ -56,6 +57,7 @@ const Debug = () => {
 
 const App = () => (
     <Provider>
+      <SoundController />
       <View style={styles.container}>
         <Game style={styles.game} />
         <Debug />
