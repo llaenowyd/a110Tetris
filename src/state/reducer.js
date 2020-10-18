@@ -57,11 +57,7 @@ const taglog = tag => x => { console.log(tag, x); return x }
 const useNextTetAndMaybeFinish =
   R.compose(
     R.when(
-      R.compose(
-        taglog('isFinished2'),
-        isFinished,
-        taglog('isFinished1')
-      ),
+      isFinished,
       R.compose(
         stopTickReducer,
         R.set(R.lensPath(['game', 'finished']), true)
