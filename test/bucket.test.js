@@ -1,21 +1,6 @@
+import * as TestUtil from './util'
 
 import * as Bucket from '../src/bucket'
-import * as Pokedraw from '../src/state/matrixReducers/pokedraw';
-
-const makeEmptyBucket = (cols, rows) => {
-  const result = []
-
-  for (let i = 0; i < cols; i++) {
-    result.push([])
-    const ri = result.length - 1
-
-    for (let j = 0; j < rows; j++) {
-      result[ri].push(0)
-    }
-  }
-
-  return result
-}
 
 const drawPoints = (bucket, points, pos, kind) => {
   for (let i = 0; i < points.length; i++) {
@@ -33,7 +18,7 @@ describe('Bucket.completeRows', () => {
   it('basically works', () => {
     const state = {
       game: {
-        bucket: makeEmptyBucket(cols, rows),
+        bucket: TestUtil.makeEmptyBucket(cols, rows),
         actiTet: { points: [[0,0]], pos: [0,0] },
         completedRows: []
       }

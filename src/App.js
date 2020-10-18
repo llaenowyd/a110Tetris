@@ -2,7 +2,6 @@
 import React from 'react'
 
 import {
-  SafeAreaView,
   StyleSheet,
   Text,
   View
@@ -43,7 +42,8 @@ const Debug = () => {
   const gameClock = useSelector(R.path(['game', 'clock']))
 
   const diagnostic =
-    ((sd, cd) => `${sd}${cd}`
+    (
+      (sd, cd) => `${sd}${cd}`
     )(
       R.defaultTo('', skewDiagnostic),
       tickIdle || tickMode !== 'game' ? '' : ` ${gameClock}`
@@ -56,12 +56,10 @@ const Debug = () => {
 
 const App = () => (
     <Provider>
-      <SafeAreaView style={{height: '100%'}}>
-        <View style={styles.container}>
-          <Game style={styles.game}/>
-          <Debug />
-        </View>
-      </SafeAreaView>
+      <View style={styles.container}>
+        <Game style={styles.game} />
+        <Debug />
+      </View>
     </Provider>
   )
 
