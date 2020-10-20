@@ -1,4 +1,7 @@
+import * as R from 'ramda'
+
 import * as TestUtil from './util'
+import { makeTet, tetset } from '../src/tets'
 
 import * as Bucket from '../src/bucket'
 
@@ -39,5 +42,75 @@ describe('Bucket.completeRows', () => {
     expect(nextState.game.actiTet).toEqual(state.game.actiTet)
     expect(nextState.game.bucket).toEqual(state.game.bucket)
     expect(nextState.game.completedRows).toEqual([0])
+  })
+})
+
+describe.skip('Bucket.isFinished', () => {
+  const cols = 10
+  const rows = 20
+  const makeTetCR = makeTet(cols, rows)
+
+  const addRow = tetKind => R.map(R.append(tetKind))
+
+  const addRows = (n, tetKind) =>
+    bucket =>
+      R.reduce(
+        bucket => addRow(tetKind)(bucket),
+        bucket,
+        R.repeat(null, n)
+      )
+
+  it('detects game over when bucket is completely full', () => {
+    const bucket = TestUtil.makeEmptyBucket(cols, rows+6, 'T')
+
+    R.forEach(
+      tetKind => {
+        expect(Bucket.isFinished({
+          game: {
+            actiTet: makeTetCR(tetKind),
+            bucket
+          }
+        })).toEqual(true)
+      },
+      tetset
+    )
+  })
+
+  it('doesnt detect game over when bucket is filled only to view', () => {
+    const bucket = addRows(6, 0)(TestUtil.makeEmptyBucket(cols, rows, 'T'))
+
+    R.forEach(
+      tetKind => {
+        expect(Bucket.isFinished({
+          game: {
+            actiTet: makeTetCR(tetKind),
+            bucket
+          }
+        })).toEqual(false)
+      },
+      tetset
+    )
+  })
+
+  it('detects game over when bucket is filled one row beyond view', () => {
+    const bucket =
+      R.compose(
+        addRows(5, 0),
+        addRow('T')
+      )(
+        TestUtil.makeEmptyBucket(cols, rows, 'T')
+      )
+
+    R.forEach(
+      tetKind => {
+        expect(Bucket.isFinished({
+          game: {
+            actiTet: makeTetCR(tetKind),
+            bucket
+          }
+        })).toEqual(true)
+      },
+      tetset
+    )
   })
 })
