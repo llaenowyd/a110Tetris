@@ -2,13 +2,13 @@ import { Alert } from 'react-native'
 
 import * as R from 'ramda'
 
-import { canFall, completeRows } from '../bucket' // isFinished
+import { canFall, completeRows } from '../bucket'
 import { makeTet } from '../tets'
 
 import { getActionName } from './actions'
 import { setFlash, stopFlash } from './animation'
 import { getInitialState, initialActiTet } from './initialState'
-import { clearCompletedRows, drawActiTet, eraseActiTet, leftRot, riteRot, left, rite, up, fall, fall2 } from './matrixReducers'
+import { clearCompletedRows, drawActiTet, eraseActiTet, leftRot, riteRot, left, rite, up, fall } from './matrixReducers'
 import { tryCatcher } from './common'
 
 const taglog = tag => x => { console.log(tag, x); return x }
@@ -163,7 +163,7 @@ const fallOrSettle =
     canFall,
     R.compose(
       drawActiTet,
-      fall2,
+      fall,
       eraseActiTet
     ),
     settle
